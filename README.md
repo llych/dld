@@ -7,5 +7,5 @@
 1周时间看 w3cschool 的js 基础
 勉强把功能给实现了
 联系: llych#126.com
- ### 基本流程<br />  
+### 基本流程<br />  
  ![image](https://github.com/llych/dld/blob/master/screenshots/dld1.png)
