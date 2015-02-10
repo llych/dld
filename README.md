@@ -1,7 +1,7 @@
 # dld
 上线回滚,批量部署
 -----------------------------------  
-    花了2周时候看django book
+    花了2周时间看 django book
     1周时间看 ansible
     几天的时候看 celery
     1周时间看 w3cschool 的js 基础
