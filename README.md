@@ -8,9 +8,9 @@
     勉强把功能给实现了
     联系: llych#126.com
 
-* celery 任务队列
-* ansible 批量执行命令,及playbook
-* 任务加入 celery 队列,前端ajax 定时刷新任务状态
+* celery 任务队列(所有任务都由这管理)
+* 批量执行命令,部署(ansible -shell playbook)
+* php 代码上线回滚管理(根据版本号,从svn版本库,提取出文件列表,同步至本地目录(git控制,回滚需要),再同步生产环境)
 
 ### 基本流程<br />  
  ![image](https://github.com/llych/dld/blob/master/screenshots/dld1.png)
