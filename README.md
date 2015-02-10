@@ -18,5 +18,18 @@
 ### 资产管理,及批量执行命令<br />
 ![image](https://github.com/llych/dld/blob/master/screenshots/dld3.gif)
 
+### php代码管理<br />
+![image](https://github.com/llych/dld/blob/master/screenshots/dld7.gif)
+
 ### 登录<br />
 ![image](https://github.com/llych/dld/blob/master/screenshots/dld2.jpg)
+
+### 资产管理<br />
+![image](https://github.com/llych/dld/blob/master/screenshots/dld4.jpg)
+
+### ansible playbook<br />
+![image](https://github.com/llych/dld/blob/master/screenshots/dld5.jpg)
+
+### 上线管理<br />
+![image](https://github.com/llych/dld/blob/master/screenshots/dld5.jpg)
+
