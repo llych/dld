@@ -31,5 +31,5 @@
 ![image](https://github.com/llych/dld/blob/master/screenshots/dld5.jpg)
 
 ### 上线管理<br />
-![image](https://github.com/llych/dld/blob/master/screenshots/dld5.jpg)
+![image](https://github.com/llych/dld/blob/master/screenshots/dld6.jpg)
 
