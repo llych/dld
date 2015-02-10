@@ -15,5 +15,8 @@
 ### 基本流程<br />  
  ![image](https://github.com/llych/dld/blob/master/screenshots/dld1.png)
  
+### 资产管理,及批量执行命令<br />
+![image](https://github.com/llych/dld/blob/master/screenshots/dld3.gif)
+
 ### 登录<br />
 ![image](https://github.com/llych/dld/blob/master/screenshots/dld2.jpg)
