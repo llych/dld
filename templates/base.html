@@ -1,0 +1,155 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>运维平台</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{STATIC_URL}}css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{STATIC_URL}}css/bootstrap-table.css" rel="stylesheet">
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="{{STATIC_URL}}js/jquery.min.js"></script>
+    <script src="{{STATIC_URL}}js/bootstrap.min.js"></script>
+    <script src="{{STATIC_URL}}js/bootstrap-table.js"></script>
+    <script src="{{STATIC_URL}}js/popover.js"></script>
+    <script src="{{STATIC_URL}}js/tooltip.js"></script>
+
+    <script src="{{STATIC_URL}}js/sweet-alert.min.js"></script> 
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/sweet-alert.css">
+    
+  
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+
+
+	<style>
+	html {
+			background: url({{STATIC_URL}}images/templatemo-bg-1.jpg) no-repeat center center fixed; 
+			-webkit-background-size: cover;
+			-moz-background-size: cover;
+			-o-background-size: cover;
+			background-size: cover;
+			background-color: rgba(0, 0, 0, 0.4); 
+		}
+
+	body {
+		padding-top: 20px;
+		background-color: rgba(0, 0, 0, 0); 
+	}
+
+
+	.panel-info{
+
+		/*color:#008080;*/
+		/*background-color: rgba(0, 0, 0, 0.6); */
+
+		border-color: black;
+		filter:alpha(Opacity=9);-moz-opacity:0.9;opacity: 0.9;
+		/*height: 90%;*/
+
+
+	}
+	/*
+	.table > thead > tr > td.success, .table > tbody > tr > td.success, .table > tfoot > tr > td.success, .table > thead > tr > th.success, .table > tbody > tr > th.success, .table > tfoot > tr > th.success, .table > thead > tr.success > td, .table > tbody > tr.success > td, .table > tfoot > tr.success > td, .table > thead > tr.success > th, .table > tbody > tr.success > th, .table > tfoot > tr.success > th {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+	.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+    border-top: 1px solid black;
+    line-height: 1.42857;
+    padding: 8px;
+    vertical-align: top;
+}
+	.panel-title {
+    color: #F8F8F8;
+    font-size: 16px;
+
+	}
+
+*/
+.panel-info > .panel-heading {
+   background-color: rgba(8, 8, 8,0.8);
+   border:solid 1px black;	
+
+   			{% block css %}
+	
+			{% endblock %} 
+    
+}
+	</style>
+
+	<script>
+		   $('#table').bootstrapTable({
+		    url: 'data.json'
+		});
+	</script>
+
+  </head>
+
+  <body>
+	<div class="container">
+	<div class="row clearfix">
+		<div class="col-md-12 column" >
+			<nav id="main" class="navbar navbar-inverse" role="navigation">
+				<div class="navbar-header">
+					 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button> <a class="navbar-brand" href="#">运维平台</a>
+				</div>
+				
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav">
+						{% block nav %}
+						<li class="active">
+							 <a href="/">主页</a>
+						</li>
+						<li >
+							 <a href="/host">资产管理</a>
+						</li>
+						<li >
+							 <a href="/ansible">ansible模块</a>
+						</li>
+						<li >
+							 <a href="/code">上线管理</a>
+						</li>
+						{% endblock %}
+
+					
+					</ul>
+					<form class="navbar-form navbar-left" role="search">
+						<div class="form-group">
+							<input type="text" class="form-control" />
+						</div> <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> </button>
+					</form>
+					<ul class="nav navbar-nav navbar-right">
+
+						<li>
+							 <a href="#"><span class="glyphicon glyphicon-user"></span> {{user}}</a>
+						</li>
+						<li>
+							 <a href="{% url 'logout' %}">退出</a>
+						</li>
+
+					</ul>
+				</div>
+				
+			</nav>
+
+			
+			{% block content %}
+	
+			{% endblock %}
+
+
+		</div>
+	</div>
+</div>
+  </body>
+</html>

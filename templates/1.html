@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Bootstrap Popover Example</title>
+<meta name="description" content="This is an example to create Popover with Bootstrap.">
+<link href="http://127.0.0.1:8000/static/js/bootstrap.min.js" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+<h2>Example of creating Popover with Bootstrap</h2>
+<div class="well">
+<a href="#" id="example" class="btn btn-success" rel="popover" data-content="It's so simple to create a tooltop for my website!" data-original-title="Bootstrap Popover">hover for popover</a>
+</div>
+</div>
+<script src="http://libs.baidu.com/jquery/1.7.1/jquery.min.js"></script>
+<script src="../bootstrap/twitter-bootstrap-v2/js/bootstrap-tooltip.js"></script>
+<script src="../bootstrap/twitter-bootstrap-v2/js/bootstrap-popover.js"></script>
+<script>
+$(function ()
+{ $("#example").popover();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+from django.conf.urls import patterns, include, url
+from django.contrib import admin
+
+from django.conf.urls.static import static 
+
+import settings
+
+
+urlpatterns = patterns('',
+    # Examples:
+    # url(r'^$', 'devops.views.home', name='home'),
+    # url(r'^blog/', include('blog.urls')),
+
+    url(r'^admin/', include(admin.site.urls)),
+    url(r'^login/$',login_admin.views.LoginView),
+    url(r'^$',login_admin.views.Index),
+    url(r'^logout/$',login_admin.views.Logout,name='logout'),
+    url(r'^host/$',host_manager.views.HostManagement)
+)
+
+urlpatterns += static(settings.MEDIA_URL , document_root = settings.MEDIA_ROOT ) 
+urlpatterns += static(settings.STATIC_URL, document_root = settings.STATIC_ROOT ) 

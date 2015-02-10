@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+			
+			<div class="row clearfix">
+				<div class="col-md-3 column" >
+					<!-- 面板 -->
+					<div class="panel panel-info ">
+					  <div  class=" panel-heading">
+					    <h3 class="panel-title ">学习板</h3>
+					  </div>
+					  <div class="panel-body ">
+					    # Remove color codes (special characters) with sed <br/>
+						sed -r "s:\x1B\[[0-9;]*[mK]::g"'
+					  </div>
+					</div>
+				</div>
+				<div class="col-md-9 column" >
+					<div class="panel panel-info ">
+					  <div  class=" panel-heading">
+					    <h3 class="panel-title ">任务</h3>
+					  </div>
+					  <div class="panel-body ">
+					  	
+					    
+					    <table id="tasks_table" class="table table-bordered table-hover table-bordered">
+							<thead>
+								<tr>
+									<th>
+										任务id
+									</th>
+									<th>
+										事件
+									</th>
+									<th>
+										创建时间
+									</th>
+									<th>
+										状态
+									</th>
+									
+								</tr>
+							</thead>
+							<tbody>
+	
+								{% for task in tasks.object_list %}
+								<tr>
+									<td>
+										{{task.task_id}}
+									</td>
+									<td>
+										{{task.info}}
+									</td>
+									<td>
+										{{task.created}}
+									</td>
+									<td>
+										{% ifequal task.status 'stop' %} 
+										<button id="{{task.task_id}}" type="button" class="btn btn-sm btn-danger task">{{task.status}}</button>
+										{% else %} 
+										<button id="{{task.task_id}}" type="button" class="btn btn-sm btn-success task">{{task.status}}</button>
+										{% endifequal %}  
+									</td>
+								</tr>
+								{%  endfor %}
+
+
+							</tbody>
+						</table>
+							<ul class="pagination">
+								{% if tasks.has_previous %}
+									<li><a href="?page={{ tasks.previous_page_number }}">&laquo;</a></li>
+								{% endif %}
+								{% for num in tasks.paginator.page_range %}
+									{% ifequal num tasks.number %}
+										<li class="active"><a href="?page={{num}}">{{num}}</a></li>
+									{% else %} 
+										<li class=""><a href="?page={{num}}">{{num}}</a></li>
+									{% endifequal %}
+								{% endfor %}
+								{% if tasks.has_next %}
+									<li><a href="?page={{ tasks.next_page_number }}">&raquo;</a></li>
+								{% endif %}
+<!-- 							  <li class="disabled"><a href="#">1</a></li>
+							  <li class="active"><a href="#">2</a></li> -->
+							  	     
+							   {{ tasks.number }} / {{ tasks.paginator.num_pages }}
+							</ul>
+
+<!-- 							<div class="pagination">
+							    <span class="step-links">
+							        {% if tasks.has_previous %}
+							            <a href="?page={{ tasks.previous_page_number }}">上一页</a>
+							        {% endif %}
+
+							        <span class="current">
+							            Page {{ tasks.number }} of {{ tasks.paginator.num_pages }}.
+							        </span>
+
+							        {% if tasks.has_next %}
+							            <a href="?page={{ contacts.next_page_number }}">next</a>
+							        {% endif %}
+							    </span>
+							</div> -->
+
+
+					  </div>
+					</div>
+				</div>
+			</div>
+
+
+			<!-- 对话框  -->
+				<div class="modal fade" id="show_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				  <div class="modal-dialog modal-lg">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				        <h4 class="modal-title" id="myModalLabel">状态</h4>
+				      </div>
+				      <div class="modal-body">
+				         <!-- <iframe src="/i/eg_landscape.jpg"></iframe>
+						  <frame id="task_frame" src="" /> -->
+						  <!-- <frame src="/ansible/gettask/ca0880cd-1ccd-4a0d-8223-8fae5f9628c7/" /> -->
+						  <!-- <iframe id="task_frame" src="#" name="main" width="100%" height="300" frameborder="0" ></iframe> -->
+						  <div id="task_info" style="overflow-y:auto;max-height:450px;" ></div>
+						
+				      </div>
+				      <div class="modal-footer">
+				        <button type="button" class="btn btn-info" data-dismiss="modal" onclick="javascript:void(0)">关闭</button>
+				        <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="javascript:void(0)">确定</button>
+				        
+				      </div>
+
+				    </div>
+				  </div>
+				</div>
+						<!-- 对话框 -->
+			<script>
+
+				function getCookie(name) {
+								             var cookieValue = null;
+								             if (document.cookie && document.cookie != '') {
+								                 var cookies = document.cookie.split(';');
+								                 for (var i = 0; i < cookies.length; i++) {
+								                     var cookie = jQuery.trim(cookies[i]);
+								                     // Does this cookie string begin with the name we want?
+								                 if (cookie.substring(0, name.length + 1) == (name + '=')) {
+								                     cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+								                     break;
+								                 }
+								             }
+								         }
+								         return cookieValue;
+								         };
+
+				function uptaskStatus(){
+
+						var tasks=new Array()
+						$("#tasks_table").children("tbody").children("tr").each(function(i,k){
+							var thisJob=$(this).children();
+							taskID=$.trim(thisJob.eq(0).text());
+							tasks[i]=taskID
+
+							// console.log(this.eq(1).text());
+
+						});
+						var postData={
+									 		csrfmiddlewaretoken:getCookie("csrftoken"),
+									 		tasks:tasks,
+									 		
+									 		};
+						$.ajax({
+									 		
+									 		type: "POST",
+									 		async: false,
+									 		url: "{% url 'getstatus' %}",
+									 		dataType: 'json',
+									 		data: postData,
+									 		success: function(data){
+
+									 			if(data.results == "error"){
+									 				// swal("错误", data.info, "error");
+									 				
+									 			};
+									 			if(data.results == "success"){
+
+										 			$.each(data.info,function(i,item){
+												       　　$.each(item,function(t,s){
+												       // 　　　　 console.log(t+s);
+												       		$("#"+t).html(s);
+												    　　　}); 	
+										 				
+												    　}); 	
+										 				
+
+									 			};
+									 		}
+									 	});
+						
+						// console.log(tasks);
+					};
+
+
+				$(document).ready(function(){
+
+						$(".task").click(function(){
+							taskUrl = '/ansible/gettask/'+$(this).attr("id");
+							// $("#task_frame").attr("src",taskUrl);
+							$("#task_info").html("加载中...");
+							$("#show_modal").modal();
+							$("#task_info").load(taskUrl);
+							console.log($(this).attr("id"));
+						});
+					});
+				$(document).ready(function () { 
+					setInterval("uptaskStatus()",5000); 
+					}); 
+
+			</script>
+
+{% endblock %}

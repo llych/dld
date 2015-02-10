@@ -1,0 +1,534 @@
+{% extends "base.html" %}
+
+{% block nav %}
+						<li >
+							 <a href="/">主页</a>
+						</li>
+						<li>
+							 <a href="/host">资产管理</a>
+						</li>
+						<li class="active">
+							 <a href="/ansible">ansible模块</a>
+						</li>
+						<li >
+							 <a href="/code">上线管理</a>
+						</li>
+						{% endblock %}
+
+
+{% block content %}
+<div class="row clearfix">
+
+				<div class="col-md-12 column" >
+					<div class="panel panel-info ">
+					  <div  class=" panel-heading">
+					    <h3 class="panel-title ">注册模块</h3>
+					  </div>
+ 						<!-- 表头按钮 -->
+						<div class="btn-group">
+							<button class="btn btn-default" id="get-add">
+						        新增模块
+						    </button>
+
+						    <button class="btn btn-default" data-trigger="hover" id="remove-data" role="button" data-toggle="tooltip" data-placement="right" title="Warning!Warning!Warning!"  data-content="批量删除数据,不可恢复">
+						        批量删除
+						    </button>
+
+
+
+						</div>
+
+						<table  id="table-methods-table"  data-toggle="table" data-url="{% url 'getmodule' %}" data-height="350" data-sort-name="created"   data-search="true" data-pagination="true" data-page-list="[5, 10, 20, 50, 100, 200]"  data-sort-order="desc">
+							    <thead>
+							        <tr>
+							        	<th data-field="state" data-checkbox="true"></th>
+							            <th data-field="id" data-align="left" data-sortable="true" >模块ID</th>
+							            <th data-field="name" data-align="left" data-sortable="true" >Name</th>
+							            <th data-field="playbook" data-align="left" data-sortable="true">playbook 路径</th>
+							            
+							            <th data-field="created" data-align="left" data-sortable="true">创建时间</th>
+							            
+							            <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">操作</th>
+							        </tr>
+							    </thead>
+							</table>
+
+
+
+
+					  </div>
+					</div>
+
+					<!-- 对话框  -->
+								<div class="modal fade" id="delModule" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+								  <div class="modal-dialog">
+								    <div class="modal-content">
+								      <div class="modal-header">
+								        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+								        <h4 class="modal-title" id="myModalLabel">警告,删除不可恢复</h4>
+								      </div>
+								      <div class="modal-body">
+								        <p id="dialogtest"></p>
+								        <p id="delinfo"  style="color:#FF0000"></p>
+								      </div>
+								      <div class="modal-footer">
+								        <button type="button" class="btn btn-info" data-dismiss="modal">关闭</button>
+								        <button id="delOK" type="button" class="btn btn-danger" >确定</button>
+								        
+								      </div>
+
+								    </div>
+								  </div>
+								</div>
+						<!-- 对话框 -->
+
+						<!-- 对话框 增加主机 -->
+								<div class="modal fade" id="addModule" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+								  <div class="modal-dialog">
+								    <div class="modal-content">
+								      <div class="modal-header">
+								        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+								        <h4 class="modal-title" id="AddModalLabel">增加主机</h4>
+								      </div>
+								      <div class="modal-body">
+
+								        <form id="addModuleForm" class="form-horizontal" role="form" method="post" action="/addModule/">
+								        		{% csrf_token %}
+								        		<input id="id" type="hidden" value="" name="id">
+  											  <div class="form-group">
+											    <label  class="col-sm-2 control-label">Name</label>
+											    <div class="col-sm-8">
+											      <input type="text" class="form-control" id="name" name="name" placeholder="模块名称">
+											    </div>
+											  </div>
+											  <div class="form-group">
+											    <label  class="col-sm-2 control-label">playbook路径</label>
+											    <div class="col-sm-8">
+											      <input type="text" class="form-control" id="playbook" name="playbook" placeholder="路径">
+											    </div>
+											  </div>
+
+											  <div class="form-group">
+											    <div class="col-sm-offset-2 col-sm-4">
+											      <button id="submitAdd" type="button"  class="btn btn-primary">提交</button> <!-- type="submit" -->
+											      <button type="button" class="btn btn-info" data-dismiss="modal">关闭</button>
+											    </div>
+											    <div class="col-sm-6">
+											      <p id="info" style="color:#FF0000"></p>
+											    </div>
+											  </div>
+											</form>
+
+								      </div>
+
+								    </div>
+								  </div>
+								</div>
+						<!-- 对话框 -->
+
+					
+				</div>
+							<script>
+									$(function ()
+										{ $("#remove-data").popover();
+										});
+
+								    function operateFormatter(value, row, index) {
+								        return [
+
+								            '<a class="edit ml10" href="javascript:void(0)" title="Edit">',
+								                '<i class="glyphicon glyphicon-edit"></i>',
+								            '</a>',
+								            '<a class="remove ml10" href="javascript:void(0)" title="Remove">   ',
+								                '<i class="glyphicon glyphicon-remove"></i>',
+								            '</a>',
+								            '<a class="detailed ml10" href="javascript:void(0)" title="Remove">',
+								                '详细',
+								            '</a>'
+								        ].join('');
+								    }
+
+								    window.operateEvents = {
+	
+								        'click .edit': function (e, value, row, index) {
+								        	console.log(value, row.describe, index);
+								        	$("#addModuleForm")[0].reset(); 
+								        	$("#AddModalLabel").html("更新模块");
+								        	$("#id").attr("value",row.id);
+								        	$("#name").attr("value",row.name);
+								        	$("#playbook").attr("value",row.playbook);
+								        	
+
+								        	
+								        	$("#addModuleForm").attr("action","{% url 'upModule' %}");
+								        	
+								        	// $("#addModule").removeData();
+								        	$("#addModule").modal();
+								            // alert('You click edit icon, row: ' + JSON.stringify(row));
+								            
+								        },
+								        'click .detailed': function (e, value, row, index) {
+								            alert('You click detailed: ' + JSON.stringify(row));
+								            
+								        },
+								        'click .remove': function (e, value, row, index) {
+								        	
+								        	// $("#delOK").attr("onclick","dodel(\""+row.ip+"\")");
+								        	// $("#delModule").modal();
+
+								        	$("#delinfo").html("");
+							                $("#dialogtest").html("<h1>ID:"+row.id+' '+row.name+'</h1>');
+							              							                
+							                $("#delOK").attr("onclick","moduleremove("+row.id+")");
+							                $("#delModule").modal();
+								            // alert('确定删除 ' + JSON.stringify(row));
+								            // $table = $('#table-methods-table').bootstrapTable()
+								            // $table.bootstrapTable('remove', {
+									           //          field: 'id',
+									           //          values: [row.id,]
+									           //      });
+								            // console.log(row);
+								        }
+								    };
+
+								    // 表头按钮 事件
+								    $(function () {
+									        
+									            // $(this).hide();
+
+									            var id = 0,
+									                getRows = function () {
+									                    var rows = [];
+
+									                    // for (var i = 0; i < 10; i++) {
+									                    //     rows.push({
+									                    //         id: id,
+									                    //         name: 'test' + id,
+									                    //         price: '$' + id
+									                    //     });
+									                    //     id++;
+									                    // }
+									                    // console.log(rows);
+									                    // return [];
+									                    // return rows;
+
+									                },
+									                // init table use data
+									                $table = $('#table-methods-table').bootstrapTable({
+									                    data: getRows()
+									                });
+									                
+
+									            $('#get-selections').click(function () {
+									                alert('Selected values: ' + JSON.stringify($table.bootstrapTable('getSelections')));
+									            });
+									            //执行
+									            $('#get-exec').click(function () {
+									                // alert('Selected values: ' + JSON.stringify($table.bootstrapTable('getSelections')));
+									                var selects = $table.bootstrapTable('getSelections');
+									                    ips = $.map(selects, function (row) {
+									                        return row.ip;
+									                    });
+									                    // alert(ips.join(","));
+									                    $("#execip").html(ips.join("<br/>"));
+									                    $("#execmodal").modal();
+									            });
+									            // 新增 
+									            $('#get-add').click(function () {
+									            	
+										        	$("#info").html("");
+										        	$("#AddModalLabel").html("增加模块");
+										        	$("#addModuleForm").attr("action","{% url 'addModule' %}");
+										        	$("#addModule").modal();
+
+									            });
+									            $('#get-data').click(function () {
+									                alert('current data: ' + JSON.stringify($table.bootstrapTable('getData')));
+									            });
+									            // This demonstrates utilizing the data-method attribute to use one 
+									            //     jQuery handler to execute multiple methods. 
+									            // ($this).data('method') retrieves the value of the data-method 
+									            //     attribute of the object that was clicked which is then passed to 
+									            //     the bootstrapTable function. 
+									            // Only the load and append methods require a parameter                                 
+									            $('#load-data, #append-data, #check-all, #uncheck-all, ' +
+									                    '#show-loading, #hide-loading').click(function () {
+									                $table.bootstrapTable($(this).data('method'), getRows());
+									            });
+									            $('#refresh').click(function () {
+									                $table.bootstrapTable('refresh', {
+									                    url: 'data1.json'
+									                });
+									            });
+									            $('#remove-data').click(function () {
+									                var selects = $table.bootstrapTable('getSelections');
+									                    ids = $.map(selects, function (row) {
+									                        return 'ID:'+row.id+'    '+row.name;
+									                    });
+
+									                // $table.bootstrapTable('remove', {
+									                //     field: 'ip',
+									                //     values: ips
+									                // });
+									               	$("#delinfo").html("");
+									                
+									                if(ids.length==0){
+									                	$("#dialogtest").html("没有选择模块");
+									                }
+									                else{
+									                	$("#dialogtest").html(ids.join("<br/>"));
+									                	$("#delOK").attr("onclick","delselect()");
+									                };
+									                
+									                
+									                
+									                $("#delModule").modal();
+
+									            });
+									            $('#update-row').click(function () {
+									                $table.bootstrapTable('updateRow', {
+									                    index: 1,
+									                    row: {
+									                        name: 'test111111',
+									                        price: '$111111'
+									                    }
+									                });
+									            });
+									            $('#merge-cells').click(function () {
+									                $table.bootstrapTable('mergeCells', {
+									                    index: 1,
+									                    field: 'name',
+									                    colspan: 2,
+									                    rowspan: 3
+									                })
+									            });
+									            $('#show-column, #hide-column').click(function () {
+									                $table.bootstrapTable($(this).data('method'), 'id');
+									            });
+									        
+									    });
+								
+									function getCookie(name) {
+								             var cookieValue = null;
+								             if (document.cookie && document.cookie != '') {
+								                 var cookies = document.cookie.split(';');
+								                 for (var i = 0; i < cookies.length; i++) {
+								                     var cookie = jQuery.trim(cookies[i]);
+								                     // Does this cookie string begin with the name we want?
+								                 if (cookie.substring(0, name.length + 1) == (name + '=')) {
+								                     cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+								                     break;
+								                 }
+								             }
+								         }
+								         return cookieValue;
+								         };
+
+
+
+
+									function moduleremove(id){
+
+									    var idsObj = {csrfmiddlewaretoken:getCookie("csrftoken"),ids:[id]};
+									    
+									    $("#delOK").html("运行中");
+									    $("#delOK").attr("disabled","disabled");
+									    
+									    
+										$.ajax({
+									 		type: "POST",
+									 		url: "{% url 'delModule' %}",
+									 		dataType: 'json',
+									 		data: idsObj,
+									 		success: function(data){
+									 			
+												
+									 			
+									 			
+									 			if(data.results == "error"){
+									 				
+									 				$("#delinfo").html("错误:"+data.info+'<br/>请仔细检查');
+
+									 			};
+									 			if(data.results == "success"){
+
+									 				var ids=[id]
+									 				$table = $('#table-methods-table').bootstrapTable();
+									 				
+								            		$table.bootstrapTable('remove', {
+									                    field: 'id',
+									                    values: ids
+									                });
+								           			
+									 				$("#delModule").modal('hide');
+									 				
+
+									 			};
+									 		}
+									 	});
+									 	
+									 	$("#delOK").html("确定");
+									 	$("#delOK").removeAttr("disabled");	
+
+									}
+
+									function delselect(){
+
+										$table = $('#table-methods-table').bootstrapTable();
+										var selects = $table.bootstrapTable('getSelections');
+									                    ids = $.map(selects, function (row) {
+									                        return row.id;
+									                    });
+
+
+									    var idsObj = {csrfmiddlewaretoken:getCookie("csrftoken"),ids:ids};
+									    
+									    $("#delOK").html("运行中");
+									    $("#delOK").attr("disabled","disabled");
+									    
+									    
+										$.ajax({
+									 		type: "POST",
+									 		url: "{% url 'delModule' %}",
+									 		dataType: 'json',
+									 		data: idsObj,
+									 		success: function(data){
+									 			
+												
+									 			
+									 			
+									 			if(data.results == "error"){
+									 				
+									 				$("#delinfo").html("错误:"+data.info+'<br/>请仔细检查');
+
+									 			};
+									 			if(data.results == "success"){
+									 				
+									 				$table = $('#table-methods-table').bootstrapTable();
+									                // $table.bootstrapTable('refresh', {
+									                    
+									                // });
+									                
+									                $table.bootstrapTable('remove', {
+									                    field: 'id',
+									                    values: ids
+									                });
+									 				$("#delModule").modal('hide');
+									 				
+
+									 			};
+									 		}
+									 	});
+									 	
+									 	$("#delOK").html("确定");
+									 	$("#delOK").removeAttr("disabled");				                
+									    
+									};
+
+									 $("#submitAdd").click(function(){
+									 	console.log("running");
+									 	$("#submitAdd").html("运行中");
+									 	$("#submitAdd").attr("disabled","disabled");
+									 	path=$("#addModuleForm").attr("action");
+
+									 	$.ajax({
+									 		type: "POST",
+									 		async: false,
+									 		url: path,
+									 		dataType: 'json',
+									 		data: $(addModuleForm).serializeArray(),
+									 		success: function(data){
+									 			// var obj = eval ("(" + data + ")");
+									 			
+									 		// 	$.each( data, function(index, content){ 
+
+									 		// 		console.log(index+content);
+												//   // alert( "item #" + index + " its value is: " + content ); 
+												// }); 
+									 			// console.log(data)
+									 			if(data.results == "error"){
+									 				swal("错误", data.info, "error");
+									 				// $("#info").html("错误:"+data.info+'<br/>请仔细检查');
+
+									 			};
+									 			if(data.results == "success"){
+									 				$table = $('#table-methods-table').bootstrapTable();
+									                $table.bootstrapTable('refresh', {
+									                    
+									                });
+
+									 				$("#addModule").modal('hide');
+									 				swal("执行成功", "我嘞个擦!服务器君还是很给力的", "success");
+
+
+									 			};
+									 		}
+									 	});
+									 	$("#submitAdd").html("确定");
+									 	$("#submitAdd").removeAttr("disabled");
+									 });
+
+									//模块执行
+									$("#execbutton").click(function(){
+										var m = $("#selectmode  option:selected").text();
+									 	
+
+									 	$table = $('#table-methods-table').bootstrapTable();
+									 	var selects = $table.bootstrapTable('getSelections');
+									                    ips = $.map(selects, function (row) {
+									                        return row.ip;
+									                    });
+									 	var postData={
+									 		csrfmiddlewaretoken:getCookie("csrftoken"),
+									 		ip:ips,
+									 		module:m,
+									 		cmd:$("#cmd").val()
+									 	};
+									 	console.log(postData);
+									 	$("#execbutton").html("执行中...");
+									 	$("#execbutton").attr("disabled","disabled");
+									 	$.ajax({
+									 		
+									 		type: "POST",
+									 		async: false,
+									 		url: "{% url 'addtask' %}",
+									 		dataType: 'json',
+									 		data: postData,
+									 		success: function(data){
+
+									 			if(data.results == "error"){
+									 				swal("错误", data.info, "error");
+									 				// alert("eee");
+									 				
+
+									 			};
+									 			if(data.results == "success"){
+
+									 				$("#execmodal").modal("hide");
+									 				swal("任务添加成功", "我嘞个擦!服务器君还是很给力的!可以前往主页查看任务状态", "success");
+									 				
+
+									 			};
+									 		}
+									 	});
+
+									 	$("#execbutton").html("确定");
+									 	$("#execbutton").removeAttr("disabled");
+
+									 	
+
+
+									 	
+									 	
+									 	
+									 });
+								// $(function(){
+
+								// 	var test=$("#table-methods-table tr:eq(1) td:nth-child(1)").html();  
+								// 	console.log(test);
+
+								// });
+								
+								</script>
+			
+{% endblock %}

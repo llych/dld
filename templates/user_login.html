@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<head>
+	<title>运维平台</title>
+	<meta name="keywords" content="" />
+	<meta name="description" content="" />
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+	<link href="{{STATIC_URL}}css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	<link href="{{STATIC_URL}}css/bootstrap.min.css" rel="stylesheet" type="text/css">
+	<link href="{{STATIC_URL}}css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
+	<link href="{{STATIC_URL}}css/bootstrap-social.css" rel="stylesheet" type="text/css">	
+	<link href="{{STATIC_URL}}css/templatemo_style.css" rel="stylesheet" type="text/css">	
+</head>
+<body class="templatemo-bg-image-1">
+	<div class="container">
+		<div class="col-md-12">			
+			<form class="form-horizontal templatemo-login-form-2" role="form" action="" method="post">
+				{% csrf_token %}
+				<div class="row">
+					<div class="col-md-12">
+						<h1>运维上线平台登录</h1>
+						{% if errors %}
+					        <ul>
+					            {% for error in errors %}
+					            <font color="red"><li>{{ error }}</li></font>
+					            {% endfor %}
+					        </ul>
+					    {% endif %}
+					</div>
+				</div>
+				<div class="row">
+					<div class="templatemo-one-signin col-md-6">
+				        <div class="form-group">
+				          <div class="col-md-12">		          	
+				            <label for="username" class="control-label">用户</label>
+				            <div class="templatemo-input-icon-container">
+				            	<i class="fa fa-user"></i>
+				            	<input type="text" class="form-control" id="username" name="username" placeholder="">
+				            </div>		            		            		            
+				          </div>              
+				        </div>
+				        <div class="form-group">
+				          <div class="col-md-12">
+				            <label for="password" class="control-label">密码</label>
+				            <div class="templatemo-input-icon-container">
+				            	<i class="fa fa-lock"></i>
+				            	<input type="password" class="form-control" id="password" name="password" placeholder="">
+				            </div>
+				          </div>
+				        </div>
+				        <div class="form-group">
+	
+				        </div>
+				        <div class="form-group">
+				          <div class="col-md-12">
+				            <input type="submit" value="登录" class="btn btn-warning">
+				          </div>
+				        </div>
+				        <div class="form-group">
+				          	<div class="col-md-12">
+				        		<a href="forgot-password.html" class="text-center">忘记密码</a>
+				       	 	</div>
+				    	</div>
+					</div>
+					<div class="templatemo-other-signin col-md-6">
+						<label class="col-md-12">
+
+
+							 <div class="row" style="height: 90px" ></div>
+							 
+  							 
+							<li>你可以不说，但是不可以讲你自己不相信的话</li>
+							<li>与其他人一样就安全了。——《西力传》</li>
+						</label>
+
+					</div>   
+				</div>				 	
+		      </form>		      		      
+		</div>
+	</div>
+</body>
+</html>

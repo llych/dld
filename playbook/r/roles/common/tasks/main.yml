@@ -1,0 +1,7 @@
+---
+
+- name: vim
+  yum: pkg=vim state=installed
+
+- name: Ping
+  ping:

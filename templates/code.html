@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+
+{% block nav %}
+						<li >
+							 <a href="/">主页</a>
+						</li>
+						<li>
+							 <a href="/host">资产管理</a>
+						</li>
+						<li>
+							 <a href="/ansible">ansible模块</a>
+						</li>
+						<li class="active">
+							 <a href="/code">上线管理</a>
+						</li>
+						{% endblock %}
+
+
+{% block content %}
+<div class="row clearfix">
+
+				<div class="col-md-12 column" >
+					<div class="panel panel-info">
+					  <div class="panel-heading">
+					    <h3 class="panel-title">上线管理</h3>
+					  </div>
+					  <div class="panel-body">
+					    <div style="margin-bottom:20px">						
+					   		<button id="addproject" type="button" class="btn btn-default" >新增项目</button>
+					    </div>
+
+						<div class="panel-group" id="panel-14154">
+
+							{%for project in projects %}
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									 <a class="panel-title collapsed" data-toggle="collapse" data-parent="#panel-14154" href="#panel-element-{{project.id}}">{{project.project_name}}</a>
+								</div>
+								<div id="panel-element-{{project.id}}" class="panel-collapse collapse">
+									<div class="panel-body">
+										<div class="col-sm-12">
+											<label  class="control-label" style="margin-right:20px;">svn路径[{{project.svn_path}}]</label>
+											<label  class="control-label" style="margin-right:20px;">git路径[{{project.git_path}}]</label>
+											<label  class="control-label">远端路径[{{project.remote_path}}]</label>
+										</div>
+									    <div class="col-sm-6">
+									      <input type="text"  class="form-control"  id="svnversion" name="svnversion" placeholder=" svn 版本">
+									    </div>
+									    <div class="col-sm-4">
+										    <button id="submitAdd-{{project.id}}" type="button"  class="btn btn-primary">提交</button> 
+										    <button id="rollback" type="button"  class="btn btn-primary">历史及回滚</button>
+										    <button type="button"  class="btn btn-primary" onclick="delproject({{project.id}})">删除</button>
+									    </div>
+									</div>
+								</div>
+							</div>
+							{% endfor %}
+
+<!-- 							<div class="panel panel-default">
+								<div class="panel-heading">
+									 <a class="panel-title collapsed" data-toggle="collapse" data-parent="#panel-14154" href="#panel-element-125935">超市上线</a>
+								</div>
+								<div id="panel-element-125935" class="panel-collapse collapse">
+									<div class="panel-body">
+										Anim pariatur cliche...
+									</div>
+								</div>
+							</div> -->
+						</div>
+
+
+
+					  </div>
+					</div>
+				</div>
+
+
+					
+</div>
+<!-- 对话框  -->
+<div class="modal fade" id="projectmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="AddModalLabel">增加项目</h4>
+      </div>
+      <div class="modal-body">
+
+        <form id="addProjectForm" class="form-horizontal" role="form" method="post" action="{% url 'addproject' %}">
+        		{% csrf_token %}
+				  <div class="form-group">
+			    <label  class="col-sm-2 control-label">项目</label>
+			    <div class="col-sm-8">
+			      <input type="text" class="form-control" id="project_name" name="project_name" placeholder="项目名称">
+			    </div>
+			  </div>
+			  <div class="form-group">
+			    <label  class="col-sm-2 control-label">SVN</label>
+			    <div class="col-sm-8">
+			      <input type="text" class="form-control" id="svn_path" name="svn_path" placeholder="svn 地址">
+			    </div>
+			  </div>
+			  <div class="form-group">
+			    <label  class="col-sm-2 control-label">svn 用户</label>
+			    <div class="col-sm-8">
+			      <input type="text" class="form-control" id="svn_path" name="svn_user" placeholder="svn 用户名">
+			    </div>
+			  </div>
+			  <div class="form-group">
+			    <label  class="col-sm-2 control-label">svn 密码</label>
+			    <div class="col-sm-8">
+			      <input type="text" class="form-control" id="svn_path" name="svn_password" placeholder="svn 密码">
+			    </div>
+			  </div>
+			  <div class="form-group">
+			    <label  class="col-sm-2 control-label">GIT</label>
+			    <div class="col-sm-8">
+			      <input type="text" class="form-control" id="git_path" name="git_path" placeholder="git 目录">
+			    </div>
+			  </div>
+			  <div class="form-group">
+			    <label  class="col-sm-2 control-label">远程路径</label>
+			    <div class="col-sm-8">
+			      <input type="text" class="form-control" id="remote_path" name="remote_path" placeholder="远程路径 root@xxx.xxx.xxx:/xx/xx">
+			    </div>
+			  </div>
+	
+			  <div class="form-group">
+			    <div class="col-sm-offset-2 col-sm-4">
+			      <button id="AddProject" type="button"  class="btn btn-primary">提交</button> <!-- type="submit" -->
+			      <button type="button" class="btn btn-info" data-dismiss="modal">关闭</button>
+			    </div>
+			    <div class="col-sm-6">
+			      <p id="info" style="color:#FF0000"></p>
+			    </div>
+			  </div>
+			</form>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+						<!-- 对话框 -->
+
+<script>
+						function getCookie(name) {
+								             var cookieValue = null;
+								             if (document.cookie && document.cookie != '') {
+								                 var cookies = document.cookie.split(';');
+								                 for (var i = 0; i < cookies.length; i++) {
+								                     var cookie = jQuery.trim(cookies[i]);
+								                     // Does this cookie string begin with the name we want?
+								                 if (cookie.substring(0, name.length + 1) == (name + '=')) {
+								                     cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+								                     break;
+								                 }
+								             }
+								         }
+								         	return cookieValue;
+								         };
+	$(document).ready(function () { 
+					
+
+
+					$("#addproject").click(function(){
+						$("#projectmodal").modal();
+					});
+
+					$("#AddProject").click(function(){
+									 	
+									 	$("#AddProject").html("运行中");
+									 	$("#AddProject").attr("disabled","disabled");
+									 	path=$("#addProjectForm").attr("action");
+
+									 	$.ajax({
+									 		type: "POST",
+									 		async: false,
+									 		url: path,
+									 		dataType: 'json',
+									 		data: $(addProjectForm).serializeArray(),
+									 		success: function(data){
+
+									 			if(data.results == "error"){
+									 				swal("错误", data.info, "error");
+									 				// $("#info").html("错误:"+data.info+'<br/>请仔细检查');
+
+									 			};
+									 			if(data.results == "success"){
+									 				
+
+									 				$("#projectmodal").modal('hide');
+									 				swal("执行成功", "我嘞个擦!服务器君还是很给力的", "success");
+									 				setTimeout(function(){
+														location.reload();
+													},1000);
+
+
+									 			};
+									 		}
+									 	});
+									 	$("#AddProject").html("确定");
+									 	$("#AddProject").removeAttr("disabled");
+									 });
+				
+
+
+
+
+					}); 
+						
+					function delproject(id){
+						var projectObj = {csrfmiddlewaretoken:getCookie("csrftoken"),projectid:id};
+						console.log(id);
+						swal({   
+							title: "确定删除?",   
+							text: "删除后不可恢复",   
+							type: "warning",   
+							showCancelButton: true,   
+							confirmButtonColor: "#DD6B55",   
+							confirmButtonText: "YES 删除",   
+							closeOnConfirm: false }, 
+							function(){  
+
+									$.ajax({
+									 		type: "POST",
+									 		async: false,
+									 		url: "{% url 'delproject' %}",
+									 		dataType: 'json',
+									 		data: projectObj,
+									 		success: function(data){
+
+									 			if(data.results == "error"){
+									 				swal("错误", data.info, "error");
+									 				// $("#info").html("错误:"+data.info+'<br/>请仔细检查');
+
+									 			};
+									 			if(data.results == "success"){
+									 				
+
+									 				$("#projectmodal").modal('hide');
+									 				swal("Deleted!", "删除成功.", "success");
+									 				setTimeout(function(){
+														location.reload();
+													},2000);
+									 				
+
+
+									 			};
+									 		}
+									 	}); 
+								
+							});
+
+					};
+</script>
+
+			
+{% endblock %}
